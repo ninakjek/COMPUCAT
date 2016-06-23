@@ -132,88 +132,23 @@ sensor.then(function(tag) {
       else{
         log("COMPUCAT: Shocked ")
       }
-
-      
     }
   
   });
 });
 
-var coldTime = 0;
-var objectTempStat = 0
-// A simple example of an act on the irTemperature sensor.
 sensor.then(function(tag) {
   tag.on("irTemperatureChange", function(objectTemp, ambientTemp) {
-    objectTempStat = objectTemp
-
-    if(objectTemp < 28) {
-      coldTime ++;
-      if (coldTime >=30){
-        log("Brrrrr, I'm freezing. Can I get a hug?")
-      }
-    }
-    else if(objectTemp>=28) {
-      coldTime = 0;
+    if(objectTemp < 20) {
+      log("Brrrrr, I'm freezing. Can I get a hug?")
     }
   })
 });
 
-
-sensor.then(function(tag) {
-  tag.on("luxometerChange", function(lux){
-    lightLevel = lux
-
-  });
-});
-
-sensor.then(function(tag) {
-  tag.on("luxometerChange", function(lux){
-    // log("Lys: " + lux);
-  
-  });
-});
-
-var nonStopTime = 0
 sensor.then(function(tag) {
   tag.on("accelerometerChange", function(x,y,z){
-    if(x > 100 || y > 100 || z > 100) {
-      nonStopTime ++;
-      if (nonStopTime >= 5){
-        log("To infinity, AND BEYOND!");
-      }
-    }
-    else{
-      nonStopTime = 0;
-    }
+    if(x > 45 || y > 45 || z > 45) {
+      log("To infinity, AND BEYOND!");
+      
   });
-});
-
-
-// A simple example of an act on the humidity sensor.
-var prev = 0;
-sensor.then(function(tag) {
-  tag.on("humidityChange", function(temp, humidity){
-    // /log(humidity)
-    if(prev < 35 && humidity > 35) {
-      // log("Don't slobber all over the SensorTag please...");
-    }
-    prev = humidity;
-  });
-});
-
-// A simple example of an act on the irTemperature sensor.
-sensor.then(function(tag) {
-  tag.on("irTemperatureChange", function(objectTemp, ambientTemp) {
-    if(objectTemp > 25) {
-      // log("You're so hot");
-    }
-  })
-});
-
-//==============================================================================
-// Step 4 (optional): Configure periods for sensor reads.
-//------------------------------------------------------------------------------
-// The registered listeners will be invoked with the specified interval.
-sensor.then(function(tag) {
-  tag.setIrTemperaturePeriod(3000, log);
 });
