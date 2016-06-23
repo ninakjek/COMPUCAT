@@ -112,6 +112,37 @@ sensor.then(function(tag) {
   });
 });
 
+var coldTime = 0;
+// A simple example of an act on the irTemperature sensor.
+sensor.then(function(tag) {
+  tag.on("irTemperatureChange", function(objectTemp, ambientTemp) {
+    if(objectTemp > 25) {
+      log("I love hugs! Mmmmm...");
+    }
+    if(objectTemp < 16) {
+      coldTime ++;
+      if (coldTime >=30){
+        log("Brrrrr, I'm freezing. Can I get a hug?")
+      }
+    }
+    else if(objectTemp>=16) {
+      coldTime = 0;
+    }
+  })
+});
+
+
+sensor.then(function(tag) {
+  tag.on("luxometerChange", function(lux){
+    if(lux>70) {
+      log("COMPUCAT: My sensors!! So bright! I can nearly sense.");
+    }
+    else if(lux<10){
+      log("COMPUCAT: Is it night already?")
+    }
+  });
+});
+
 sensor.then(function(tag) {
   tag.on("luxometerChange", function(lux){
     // log("Lys: " + lux);
