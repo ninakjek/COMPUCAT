@@ -71,7 +71,20 @@ var wasShocked = 0
 sensor.then(function(tag) {
   tag.on("gyroscopeChange", function(x, y, z){
     //log(x + "," + y + "," + z)
-    if((x > 50 || y > 50 || z > 50) && wasShocked > 9){log("COMPUCAT: Blouughghgh [puking]")
+    if(wasShocked > 15){
+      log("COMPUCAT IS DEAD!")
+    } 
+    else if(wasShocked == 13){
+      for (var i = 0; i <= 20; i++) {
+        log(" ")
+      }
+      log("You killed COMPUCAT :(")
+      wasShocked +=20
+    }
+    else if((x > 50 || y > 50 || z > 50) && wasShocked > 9){
+      log("COMPUCAT: Blouughghgh [puking]")
+      wasShocked ++
+    } 
     else if((x > 50 || y > 50 || z > 50) && wasShocked > 4){
       log("COMPUCAT: I'm dizzy, put me down!")
       slowTime = 0
