@@ -66,6 +66,7 @@ var sensor = connected.then(function(tag) {
 //
 
 var slowTime = 0
+var lightLevel = 0
 var wasShocked = 0
 
 sensor.then(function(tag) {
@@ -73,19 +74,20 @@ sensor.then(function(tag) {
     //log(x + "," + y + "," + z)
     if(wasShocked > 15){
       log("COMPUCAT IS DEAD!")
+      log("R.I.P!")
     } 
-    else if(wasShocked == 13){
+    else if(wasShocked == 9){
       for (var i = 0; i <= 20; i++) {
         log(" ")
       }
       log("You killed COMPUCAT :(")
       wasShocked +=20
     }
-    else if((x > 50 || y > 50 || z > 50) && wasShocked > 9){
+    else if((x > 20 || y > 20 || z > 20) && wasShocked > 5){
       log("COMPUCAT: Blouughghgh [puking]")
       wasShocked ++
     } 
-    else if((x > 50 || y > 50 || z > 50) && wasShocked > 4){
+    else if((x > 20 || y > 20 || z > 20) && wasShocked > 3){
       log("COMPUCAT: I'm dizzy, put me down!")
       slowTime = 0
       wasShocked ++
@@ -97,24 +99,36 @@ sensor.then(function(tag) {
     }
     else  if(x > 16 || y > 16 || z > 16){
       log("COMPUCAT: What was that????!")
-      wasShocked = 1
+      wasShocked ++
       slowTime = 0
     }
     else{
       wasShocked = 0
       slowTime ++
-      if(slowTime > 10){
-        if(slowTime % 5 == 0) log("COMPUCAT: zzZz")
-        else if(slowTime % 3 == 0) log("COMPUCAT: zZZZZzzZZzzz")
+      if(slowTime > 10 && lightLevel < 15){
+        if(slowTime % 4 == 0) log("COMPUCAT: zzZz")
+        else if(slowTime % 2 == 0) log("COMPUCAT: zZZZZzzZZzzz")
         else log("COMPUCAT: zZZzZZZzzZZzzzzzzzZZzzzzZz")
 
       }
-      else if (slowTime > 6){
+    else  if(objectTempStat > 25) {
+        log("COMPUCAT: I love hugs! Mmmmm...");
+        slowTime = 2
+      }
+      else if (slowTime > 6 && lightLevel < 15){
         log("COMPUCAT: Getting sleepy")
+      }
+      else if (slowTime > 3 && lightLevel < 15){
+        log("COMPUCAT: Is it night already?")
+      }
+      else if(lightLevel > 80) {
+        log("COMPUCAT: My sensors!! So bright! I can nearly sense.");
+        slowTime = 0
       }
       else if (slowTime > 1){
         log("COMPUCAT: Relaxing")
       }
+
       else{
         log("COMPUCAT: Shocked ")
       }
@@ -126,19 +140,19 @@ sensor.then(function(tag) {
 });
 
 var coldTime = 0;
+var objectTempStat = 0
 // A simple example of an act on the irTemperature sensor.
 sensor.then(function(tag) {
   tag.on("irTemperatureChange", function(objectTemp, ambientTemp) {
-    if(objectTemp > 25) {
-      log("I love hugs! Mmmmm...");
-    }
-    if(objectTemp < 16) {
+    objectTempStat = objectTemp
+
+    if(objectTemp < 28) {
       coldTime ++;
       if (coldTime >=30){
         log("Brrrrr, I'm freezing. Can I get a hug?")
       }
     }
-    else if(objectTemp>=16) {
+    else if(objectTemp>=28) {
       coldTime = 0;
     }
   })
@@ -147,12 +161,8 @@ sensor.then(function(tag) {
 
 sensor.then(function(tag) {
   tag.on("luxometerChange", function(lux){
-    if(lux>70) {
-      log("COMPUCAT: My sensors!! So bright! I can nearly sense.");
-    }
-    else if(lux<10){
-      log("COMPUCAT: Is it night already?")
-    }
+    lightLevel = lux
+
   });
 });
 
