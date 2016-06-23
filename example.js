@@ -163,6 +163,21 @@ sensor.then(function(tag) {
   });
 });
 
+var nonStopTime = 0
+sensor.then(function(tag) {
+  tag.on("accelerometerChange", function(x,y,z){
+    if(x > 100 || y > 100 || z > 100) {
+      nonStopTime ++;
+      if (nonStopTime >= 5){
+        log("To infinity, AND BEYOND!");
+      }
+    }
+    else{
+      nonStopTime = 0;
+    }
+  });
+});
+
 
 // A simple example of an act on the humidity sensor.
 var prev = 0;
