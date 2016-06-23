@@ -31,16 +31,13 @@ var ADDRESS = "b0:b4:48:d2:29:06";
 var connected = new Promise((resolve, reject) => SensorTag.discoverByAddress(ADDRESS, (tag) => resolve(tag)))
   .then((tag) => new Promise((resolve, reject) => tag.connectAndSetup(() => resolve(tag))));
 
- log(connected);
+log(" ")
+log("Press and hold both buttons on the SensorTag");
+log("Trying to connect...");
+log(" ")
 
-//==============================================================================
-// Step 2: Enable the sensors you need.
-//------------------------------------------------------------------------------
-// For a list of available sensors, and other functions,
-// see https://github.com/sandeepmistry/node-sensortag.
-// For each sensor enable it and activate notifications.
-// Remember that the tag object must be returned to be able to call then on the
-// sensor and register listeners.
+
+//Listeners
 var sensor = connected.then(function(tag) {
   log("connected");
 
@@ -53,28 +50,41 @@ var sensor = connected.then(function(tag) {
   tag.enableGyroscope(log);
   tag.notifyGyroscope(log);
 
+  tag.notifyAccelerometer(log);
+  tag.enableAccelerometer(log);
+
   tag.enableLuxometer(log);
   tag.notifyLuxometer(log);
   return tag;
 });
 
 
-//==============================================================================
-// Step 3: Register listeners on the sensor.
-//------------------------------------------------------------------------------
-// You can register multiple listeners per sensor.
-//
-
+//Variables
 var slowTime = 0
 var lightLevel = 0
 var wasShocked = 0
+var objectTempStat = 0
+var resurection = 0
 
 sensor.then(function(tag) {
   tag.on("gyroscopeChange", function(x, y, z){
     //log(x + "," + y + "," + z)
     if(wasShocked > 15){
-      log("COMPUCAT IS DEAD!")
-      log("R.I.P!")
+      if(objectTempStat >= 30)
+        resurection ++
+      if(resurection > 5){
+
+        log("<COMPUCAT is coming back to life>")
+        wasShocked = 0
+        resurection = 0
+      }
+      else if(resurection > 1){
+        log("<COMPUCAT is warming up>")
+      }
+      else{
+        log("COMPUCAT IS DEAD!")
+        log("R.I.P!")
+      }
     } 
     else if(wasShocked == 9){
       for (var i = 0; i <= 20; i++) {
@@ -104,6 +114,7 @@ sensor.then(function(tag) {
     }
     else{
       wasShocked = 0
+      
       slowTime ++
       if(slowTime > 10 && lightLevel < 15){
         if(slowTime % 4 == 0) log("COMPUCAT: zzZz")
@@ -111,9 +122,9 @@ sensor.then(function(tag) {
         else log("COMPUCAT: zZZzZZZzzZZzzzzzzzZZzzzzZz")
 
       }
-    else  if(objectTempStat > 25) {
+    else  if(objectTempStat > 30 && slowTime > 1 && slowTime < 5) {
         log("COMPUCAT: I love hugs! Mmmmm...");
-        slowTime = 2
+        slowTime ++
       }
       else if (slowTime > 6 && lightLevel < 15){
         log("COMPUCAT: Getting sleepy")
@@ -125,8 +136,10 @@ sensor.then(function(tag) {
         log("COMPUCAT: My sensors!! So bright! I can nearly sense.");
         slowTime = 0
       }
+
       else if (slowTime > 1){
         log("COMPUCAT: Relaxing")
+        if(lightLevel > 20) slowTime = 2
       }
 
       else{
@@ -138,17 +151,27 @@ sensor.then(function(tag) {
 });
 
 sensor.then(function(tag) {
+  tag.on("luxometerChange", function(lux){
+    lightLevel = lux
+
+  });
+});
+
+sensor.then(function(tag) {
   tag.on("irTemperatureChange", function(objectTemp, ambientTemp) {
+    objectTempStat = objectTemp
     if(objectTemp < 20) {
-      log("Brrrrr, I'm freezing. Can I get a hug?")
+      log("COMPUCAT: Brrrrr, I'm freezing. Can I get a hug?")
     }
   })
 });
 
 sensor.then(function(tag) {
   tag.on("accelerometerChange", function(x,y,z){
-    if(x > 45 || y > 45 || z > 45) {
-      log("To infinity, AND BEYOND!");
+    if(Math.abs(x) > 3.5 || Math.abs(y) > 3.5 || Math.abs(z) > 3.5) {
+
+      log("COMPUCAT: To infinity, AND BEYOND!!!!");
+    }
       
   });
 });
